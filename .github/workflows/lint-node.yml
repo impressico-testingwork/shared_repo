@@ -1,0 +1,19 @@
+name: reusable-lint-node
+# Reusable LINT component for the Node toolchain (covers React/Vue/plain JS too).
+on:
+  workflow_call:
+    inputs:
+      node-version:      { type: string, default: "20" }
+      working-directory: { type: string, default: "." }
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+      - run: npm install --no-audit --no-fund
+        working-directory: ${{ inputs.working-directory }}
+      - run: npm run lint
+        working-directory: ${{ inputs.working-directory }}
