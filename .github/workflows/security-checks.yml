@@ -1,0 +1,40 @@
+name: Security Checks (secrets + SAST)
+on:
+  workflow_call:
+    inputs:
+      runner:           { type: string,  default: "ubuntu-latest", required: false }
+      semgrep-config:   { type: string,  default: "auto", required: false }
+      fail-on-findings: { type: boolean, default: true, required: false }
+jobs:
+  secrets-scan:
+    name: Gitleaks (secret scanning)
+    runs-on: ${{ inputs.runner }}
+    permissions: { contents: read }
+    steps:
+      - uses: actions/checkout@v6
+        with: { fetch-depth: 0 }
+      - name: Install Gitleaks
+        run: |
+          set -euo pipefail
+          DL=$(curl -sSL https://api.github.com/repos/gitleaks/gitleaks/releases/latest \
+            | grep -o '"browser_download_url": *"[^"]*"' | cut -d'"' -f4 \
+            | grep -iE 'linux_(x64|amd64)\.tar\.gz$' | head -n1)
+          curl -sSL "$DL" -o gitleaks.tar.gz
+          tar -xzf gitleaks.tar.gz gitleaks
+          sudo install -m 0755 gitleaks /usr/local/bin/gitleaks
+      - name: Run Gitleaks
+        run: |
+          EXIT=$([ "${{ inputs.fail-on-findings }}" = "true" ] && echo 1 || echo 0)
+          gitleaks detect --source . --redact --verbose --exit-code "$EXIT"
+  code-scan:
+    name: Semgrep (SAST)
+    runs-on: ${{ inputs.runner }}
+    permissions: { contents: read }
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install & run Semgrep
+        run: |
+          set -euo pipefail
+          pipx install semgrep
+          FLAG=$([ "${{ inputs.fail-on-findings }}" = "true" ] && echo "--error" || echo "")
+          semgrep scan --config "${{ inputs.semgrep-config }}" $FLAG
