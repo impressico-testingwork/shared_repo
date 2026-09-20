@@ -17,7 +17,7 @@ jobs:
         env:
           DEFAULT_BRANCH: ${{ inputs.default-branch }}
           VALIDATE_ALL_CODEBASE: ${{ inputs.validate-all-codebase }}
-          #GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
           # Setting any VALIDATE_* to true = allow-list mode:
           # only these run, everything else is skipped.
