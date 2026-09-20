@@ -3,7 +3,7 @@ on:
   workflow_call:
     inputs:
       semgrep-config:   { type: string,  default: "auto", required: false }
-      fail-on-findings: { type: boolean, default: true, required: false }
+      fail-on-findings: { type: boolean, default: false, required: true }
       runner:           { type: string,  default: "ubuntu-latest", required: false }
 jobs:
   code-scan:
