@@ -1,0 +1,27 @@
+name: Lint (actionlint)
+on:
+  workflow_call:
+    inputs:
+      fail-on-findings: { type: boolean, default: true,  required: false }
+      runner:           { type: string,  default: "ubuntu-latest", required: false }
+jobs:
+  actionlint:
+    runs-on: ${{ inputs.runner }}
+    permissions: { contents: read }
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install actionlint
+        run: |
+          set -euo pipefail
+          bash <(curl -sSL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+          ./actionlint --version
+
+      - name: Run actionlint
+        run: |
+          set -euo pipefail
+          if [ "${{ inputs.fail-on-findings }}" = "true" ]; then
+            ./actionlint -color
+          else
+            ./actionlint -color || true      # report-only
+          fi
