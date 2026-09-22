@@ -1,0 +1,21 @@
+name: 'Lint shared workflows'
+description: "Runs actionlint on shared_repo's own workflow files"
+inputs:
+  fail-on-findings:
+    description: "true = fail the step on findings"
+    default: "true"
+    required: false
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        set -euo pipefail
+        ROOT="$(cd "${{ github.action_path }}/../../.." && pwd)"
+        echo "Linting workflows in: $ROOT/.github/workflows"
+        bash <(curl -sSL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+        if [ "${{ inputs.fail-on-findings }}" = "true" ]; then
+          ./actionlint -color "$ROOT/.github/workflows/"*.yml
+        else
+          ./actionlint -color "$ROOT/.github/workflows/"*.yml || true
+        fi
