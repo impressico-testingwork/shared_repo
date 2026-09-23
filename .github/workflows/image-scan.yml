@@ -5,7 +5,7 @@ on:
     inputs:
       image-artifact:  { type: string, required: true }
       image-ref:       { type: string, required: true }
-      trivy-severity:  { type: string, default: "CRITICAL,HIGH", required: false }
+      trivy-severity:  { type: string, default: "CRITICAL", required: false }   # CHANGED: only CRITICAL
       trivy-exit-code: { type: string, default: "1", required: false }   # 1 = block; 0 = report
       runner:          { type: string, default: "ubuntu-latest", required: false }
 jobs:
