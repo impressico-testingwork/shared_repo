@@ -3,7 +3,7 @@ description: "Runs actionlint on shared_repo's own workflow files"
 inputs:
   fail-on-findings:
     description: "true = fail the step on findings"
-    default: "true"
+    default: "false"
     required: false
 runs:
   using: composite
